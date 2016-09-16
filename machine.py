@@ -7,6 +7,13 @@ import random
 import util
 
 class Machine:
+    '''
+    Representation of the machine. It is responsible to run the tasks from the processes and to notify the scheduler
+    about it.
+    It creates threads to run task objects
+    Each machine has its own information of power of processing, cost, and delay
+    It can generate a report about the all work done
+    '''
 
     def __init__(self, id, name, thread_quantity, power, cost, delay):
         self._id = id
@@ -34,7 +41,6 @@ class Machine:
 
     def start(self,  task, thread_id):
         notifier = Notifier(self)
-        #thread_id = self._available_threads_id.pop(0)
         self._thread[thread_id] = self.MachineThread(self._id, thread_id, self._name, self._power, self._cost, self._delay, self._scheduler_notifier)
         self._thread[thread_id].subscribe(notifier)
         self._thread[thread_id].start(task)
@@ -50,6 +56,9 @@ class Machine:
     def subscribe(self, notifier):
         self._scheduler_notifier = notifier
 
+    def unsubscribe(self):
+        self._scheduler_notifier = None
+
     def is_thread_available(self, thread_id):
         return self._thread[thread_id] is None or not self._thread[thread_id].isAlive()
 
@@ -57,6 +66,12 @@ class Machine:
         return len(self._available_threads_id) > 0
 
     def notify(self, notification):
+        '''
+        The thread notifies the machine so it can updates the information about power, cost, and time. It also list the
+        thread as available.
+        :param notification:
+        '''
+
         thread_id = notification[0]
         notification_info = notification[1]
 
@@ -89,19 +104,25 @@ class Machine:
 
 
     class MachineThread(threading.Thread):
+        '''
+        Thread. The one that runs it all.
+        '''
 
         def __init__(self, machine_id, thread_id, name, power, cost, delay, scheduler_notifier):
             threading.Thread.__init__(self)
             self._machine_id = machine_id
             self._thread_id = thread_id
             self._name = name
+
             self._delay = delay
             self._power = power
             self._cost = cost
+
             self._scheduler_notifier = scheduler_notifier
             self._machine_notifier = None
             self._running_task_package = None
             self._machine_info = None
+
             self._total_power = 0
             self._total_cost = 0
             self._total_time = 0
@@ -114,6 +135,11 @@ class Machine:
 
 
         def run(self):
+            '''
+            Runs the thread to execute and notify.
+            Notifies the scheduler that the task is finished so it can updates the process and its scheduling.
+            Notifies the machine so it can update the resources used
+            '''
             print("Starting " + self.name)
             self.execute()
             self._scheduler_notifier.notify(self._running_task_package.task_info, self._machine_info)
@@ -122,6 +148,10 @@ class Machine:
             print("Exiting " + self.name)
 
         def execute(self):
+            '''
+            Simulates the execution of the tasks, consuming the task power left
+            :return:
+            '''
             task = self._running_task_package.task
             remaining_power = task.get_power()
             cycles_count = 0
@@ -143,4 +173,6 @@ class Machine:
         def subscribe(self, notifier):
             self._machine_notifier = notifier
 
+        def unsubscribe(self):
+            self._machine_notifier = None
 

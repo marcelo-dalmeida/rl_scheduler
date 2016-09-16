@@ -1,8 +1,10 @@
 __author__ = 'Marcelo d\'Almeida'
 
+
 from collections import namedtuple
 
 READY = "Ready"
+RUNNING = "RUNNING"
 BLOCKED = "Blocked"
 FINISHED = "Finished"
 

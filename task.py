@@ -3,6 +3,9 @@ __author__ = 'Marcelo d\'Almeida'
 
 class Task(object):
 
+    '''
+        A task basically contains a power value to state how work is needed to finish the task.
+    '''
     def __init__(self, id, power, name=None):
         self._id = id
 

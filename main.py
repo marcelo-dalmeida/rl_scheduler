@@ -1,5 +1,10 @@
 __author__ = 'Marcelo d\'Almeida'
 
+'''
+ This is the Main.
+ Setup the machines, processes, and the scheduler.
+'''
+
 from process import Process
 from task import Task
 from machine import Machine

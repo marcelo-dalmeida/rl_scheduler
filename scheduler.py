@@ -96,6 +96,11 @@ class Scheduler:
         return task_package, max_index
 
     def notify(self, notification):
+        '''
+        Informs the process that the task is done and updates the lists of available resources (tasks and machines)
+        :param notification:
+        :return:
+        '''
         task_package_info = notification[0]
         machine_info = notification[1]
 
@@ -128,12 +133,26 @@ class Scheduler:
 
     @staticmethod
     def get_machine_performance_info(machine, thread_id):
+        '''
+        The scheduler defines the metric he is interested about in machines so it can be comparable
+        at the time of the decision.
+        :param machine:
+        :param thread_id:
+        :return:
+        '''
         machine_info = util.MachineInfo(machine.get_id(), thread_id)
         machine_performance_info = util.MachinePerformanceInfo(machine_info, machine.get_power()/machine.get_cost())
         return machine_performance_info
 
     @staticmethod
     def get_task_weight_info(process, tasks):
+        '''
+        The scheduler defines the metric he is interested about in tasks so it can be comparable
+        at the time of the decision.
+        :param process:
+        :param tasks:
+        :return:
+        '''
         unblocked_task_package_info = []
 
         for task_id in tasks:
