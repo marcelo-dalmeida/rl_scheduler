@@ -1,8 +1,10 @@
 __author__ = 'Marcelo d\'Almeida'
 
-import util
 import math
-from notifier import Notifier
+
+from utils import util
+from utils.notifier import Notifier
+
 
 class Scheduler:
 
@@ -65,7 +67,7 @@ class Scheduler:
                 max_index = i
 
         if max_index == -1:
-            return None, max_index
+            return None, None, max_index
 
         machine_info = ready_machines[max_index].machine_info
         machine_id = machine_info.machine_id
@@ -141,7 +143,7 @@ class Scheduler:
         :return:
         '''
         machine_info = util.MachineInfo(machine.get_id(), thread_id)
-        machine_performance_info = util.MachinePerformanceInfo(machine_info, machine.get_power()/machine.get_cost())
+        machine_performance_info = util.MachinePerformanceInfo(machine_info, machine.get_power() / machine.get_cost())
         return machine_performance_info
 
     @staticmethod

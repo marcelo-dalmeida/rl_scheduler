@@ -22,7 +22,8 @@ class Task(object):
         if self._process_id is None:
             self._process_id = process_id
         else:
-            raise Exception("Task already has process id")
+            if self._process_id != process_id:
+                raise Exception("Task already has process id")
 
     def get_id(self):
         return self._id

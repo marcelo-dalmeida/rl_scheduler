@@ -4,7 +4,7 @@ __author__ = 'Marcelo d\'Almeida'
 from collections import namedtuple
 
 READY = "Ready"
-RUNNING = "RUNNING"
+RUNNING = "Running"
 BLOCKED = "Blocked"
 FINISHED = "Finished"
 
@@ -16,4 +16,4 @@ TaskPackageInfo = namedtuple("TaskPackageInformation", "task_id task_value proce
 
 TaskPackage = namedtuple("TaskPackage", "task task_info")
 
-MachineReport = namedtuple("MachineReport", "name total_power total_cost total_time")
+MachineReport = namedtuple("MachineReport", "name total_power total_cost total_delay total_time")

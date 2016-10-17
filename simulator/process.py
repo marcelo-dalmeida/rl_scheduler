@@ -1,6 +1,7 @@
 __author__ = 'Marcelo d\'Almeida'
 
-import util
+from utils import util
+
 
 class Process:
     '''
@@ -9,13 +10,15 @@ class Process:
     It also contains the total of power (work needed) to finish all the tasks and some notion of normalized power to
     express the average task power.
     '''
-    def __init__(self, id, name=None):
+    def __init__(self, id, name=None, task_package=None):
         self._id = id
 
         if name is None:
             self._name = id
         else:
             self._name = name
+
+        self._task_package = task_package
 
         self._tasks = {}
         self._dependencies = {}
@@ -25,7 +28,16 @@ class Process:
         self._finished_count = 0
 
         self._total_power = 0
+        self._total_tasks = 0
         self._normalized_power = 0
+
+        if self._task_package:
+            self._add_task_package(task_package)
+
+    def _add_task_package(self, task_package):
+        self.task_package = task_package
+        for task_tuple in task_package:
+            self.add(task=task_tuple[0], dependencies=task_tuple[1])
 
     def add(self, task, dependencies):
         '''
@@ -54,6 +66,7 @@ class Process:
             self._available_tasks_id.append(task.get_id())
 
         self._total_power += task.get_power()
+        self._total_tasks += 1
         self._set_normalized_power()
 
     def get_task(self, task_id):
@@ -68,7 +81,7 @@ class Process:
             self._total_power -= task.get_power()
             self._set_normalized_power()
         else:
-            task = None
+            raise Exception("Task " + task_id + " is " + self._status[task_id] + ". It is not READY")
 
         return task
 
@@ -79,7 +92,7 @@ class Process:
         :param task_id:
         :return: unblocked_tasks, tasks that were unblocked by the event of finishing the task
         '''
-        if self._status[task_id] is util.READY:
+        if self._status[task_id] is util.RUNNING:
             self._available_tasks_id.remove(task_id)
             self._status[task_id] = util.FINISHED
 
@@ -101,7 +114,7 @@ class Process:
             return unblocked_tasks
 
         else:
-            raise("This task is not " + util.READY)
+            raise Exception("This task is not running. It is " + self._status[task_id])
 
     def is_finished(self):
         return len(self._tasks) - self._finished_count == 0
@@ -121,11 +134,20 @@ class Process:
     def get_available_tasks_id(self):
         return self._available_tasks_id
 
+    def get_tasks_power(self):
+        return [(task.get_id(), task.get_power()) for task in self._tasks.values()]
+
     def get_total_power(self):
         return self._total_power
 
     def get_normalized_power(self):
         return self._normalized_power
+
+    def get_total_tasks(self):
+        return self._total_tasks
+
+    def reset(self):
+        self.__init__(self._id, self._name, self._task_package)
 
     def __repr__(self):
         return self._name

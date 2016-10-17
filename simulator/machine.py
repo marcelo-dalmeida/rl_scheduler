@@ -1,10 +1,12 @@
 __author__ = 'Marcelo d\'Almeida'
 
-from notifier import Notifier
+import random
 import threading
 import time
-import random
-import util
+
+from utils import util
+from utils.notifier import Notifier
+
 
 class Machine:
     '''
@@ -29,6 +31,7 @@ class Machine:
 
         self._total_power = 0
         self._total_cost = 0
+        self._total_delay = 0
         self._total_time = 0
 
         self._available_threads_id = []
@@ -77,12 +80,13 @@ class Machine:
 
         self._total_power += notification_info.total_power
         self._total_cost += notification_info.total_cost
+        self._total_delay += notification_info.total_delay
         self._total_time += notification_info.total_time
 
         self._available_threads_id.append(thread_id)
 
     def report(self):
-        return util.MachineReport(self._name, self._total_power, self._total_cost, self._total_time)
+        return util.MachineReport(self._name, self._total_power, self._total_cost, self._total_delay, self._total_time)
 
     def get_id(self):
         return self._id
@@ -125,6 +129,7 @@ class Machine:
 
             self._total_power = 0
             self._total_cost = 0
+            self._total_delay = 0
             self._total_time = 0
 
 
@@ -141,9 +146,10 @@ class Machine:
             Notifies the machine so it can update the resources used
             '''
             print("Starting " + self.name)
+
             self.execute()
             self._scheduler_notifier.notify(self._running_task_package.task_info, self._machine_info)
-            thread_report = util.MachineReport(self._name, self._total_power, self._total_cost, self._total_time)
+            thread_report = util.MachineReport(self._name, self._total_power, self._total_cost, self._total_delay, self._total_time)
             self._machine_notifier.notify(self._thread_id, thread_report)
             print("Exiting " + self.name)
 
@@ -154,20 +160,21 @@ class Machine:
             '''
             task = self._running_task_package.task
             remaining_power = task.get_power()
-            cycles_count = 0
+            start_time = time.process_time()
+            time.sleep(self._delay)
+            self._total_delay = self._delay
             while remaining_power > 0:
-                time.sleep(self._delay)
                 print("%s, %s - %s (%s): %s" % (self._name, self._thread_id, task.get_name(), remaining_power, time.ctime(time.time())))
 
                 if self._power > remaining_power:
                     remaining_power = 0
                 else:
                     remaining_power -= self._power
-                cycles_count += 1
 
+            total_time = time.process_time() - start_time
             self._total_power = task.get_power()
-            self._total_cost = self._power * cycles_count
-            self._total_time = cycles_count
+            self._total_cost = self._cost * total_time
+            self._total_time = total_time
 
 
         def subscribe(self, notifier):
