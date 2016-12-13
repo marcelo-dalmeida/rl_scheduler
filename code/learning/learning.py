@@ -27,30 +27,28 @@ class Q_Learning:
 
         self._cost_goal = 0
         self._time_goal = 0
-        self._goal = None
+
         self._adaptive_cost = None
         self._adaptive_time = None
-
-        self._power_goal_state = 0
-        self._cost_goal_state = 0
-        self._delay_goal_state = 0
-
-        self._previous_cost_measurement = None
-        self._previous_time_measurement = None
-        self._best_cost_measurement = None
-        self._best_time_measurement = None
 
         self._taken_action_task = {}
 
         self._setup()
 
     def _setup(self):
+
+        self._previous_cost_measurement = None
+        self._previous_time_measurement = None
+        self._best_cost_measurement = None
+        self._best_time_measurement = None
+
         self._decisions_log = [[], []]
         self._available_decisions_log = [[], []]
 
         self._rewards_log = [[], [], []]
         self._cost_rewards_detailed_info_log = [[], [], [], []]
         self._time_rewards_detailed_info_log = [[], [], [], []]
+
 
     def learn(self, raw_state, finished_task_id):
 
@@ -69,7 +67,7 @@ class Q_Learning:
         reward = self.reward(goal_oriented_state)
         self._rewards_log[0].append(reward)
         self._rewards_log[1].append(goal_oriented_state.power_state)
-        self._rewards_log[2].append(len(self._taken_action_task))
+
         for task_id, info in self._taken_action_task.items():
             raw_state, action = info
 
@@ -122,7 +120,6 @@ class Q_Learning:
                 self._available_decisions_log[0].append(action)
                 self._available_decisions_log[1].append(power_progression)
 
-        import pdb
 
         print("CURRENT STATE", self.state_repr(system_state), "", sep='\n')
         print("POWER Q-TABLE", self.table_repr(util.POWER, self.q_power_table), "", sep='\n')
@@ -240,6 +237,7 @@ class Q_Learning:
 
                     cost_goal_reward = cost_reward_measurement
 
+
                 self._cost_rewards_detailed_info_log[0].append(self._best_cost_measurement)
                 self._cost_rewards_detailed_info_log[1].append(cost_measurement)
                 self._cost_rewards_detailed_info_log[2].append(power_progression)
@@ -306,6 +304,9 @@ class Q_Learning:
     def report_reward(self):
         return self._rewards_log, [self._cost_rewards_detailed_info_log, self._time_rewards_detailed_info_log]
 
+    def report_distance_error(self):
+        return [self._cost_rewards_detailed_info_log, self._time_rewards_detailed_info_log]
+
     def report_q_tables(self):
         return self.q_power_table, self.q_cost_table, self.q_delay_table
 
@@ -342,6 +343,8 @@ class Q_Learning:
                             if value <= 1:
                                 return util.percentage_dict[util.PERCENTAGE_90_to_100]
 
+    def get_goal(self):
+        return self._cost_goal, self._time_goal
 
 
     def argmax(self, iterable):

@@ -39,6 +39,7 @@ class RL_Scheduler:
         self._setup()
 
         self.q_learning = Q_Learning(power=self.tasks_total_power)
+
         #self.q_learning.goal(cost=171, time=7)
         self.q_learning.goal(cost=155, time=6.4)
 
@@ -61,6 +62,7 @@ class RL_Scheduler:
         self.total_machines_delay = 0
 
         self._start_time = 0
+        self._start_global_time = 0
         self._total_time = 0
         self._total_power = 0
         self._total_cost = 0
@@ -134,6 +136,7 @@ class RL_Scheduler:
                 self.tasks_classification[task_id] = task_classification
 
     def schedule(self):
+        self._start_global_time = time.process_time()
         for self.current_epoch in range(1, self.epochs_quantity + 1):
             self._start_time = time.process_time()
             while not self.is_work_done():
@@ -145,7 +148,13 @@ class RL_Scheduler:
                             task_package, task_index = self.decide_task(self.ready_tasks_info, task_classification)
                             if task_package is not None:
 
+                                total_global_time = time.process_time() - self._start_global_time
+
+                                print('TOTAL TIME')
+                                print(total_global_time)
+
                                 current_time = time.process_time() - self._start_time
+
                                 print('EPOCH')
                                 print(self.current_epoch)
                                 print('CURRENT TIME')
@@ -200,9 +209,11 @@ class RL_Scheduler:
             decision_report = self.q_learning.report_decision()
             reward_report, detailed_reward_report = self.q_learning.report_reward()
             power_q_table, cost_q_table, delay_q_table = self.q_learning.report_q_tables()
+            distance_error_report = self.q_learning.report_distance_error()
             plot.decisions(decision_report[0], decision_report[1], self.current_epoch)
             plot.rewards(reward_report, detailed_reward_report, self.current_epoch)
             plot.q_table(power_q_table, cost_q_table, delay_q_table, self.current_epoch)
+            plot.distance_error(distance_error_report, self.q_learning.get_goal(), self.current_epoch)
 
             print("EPOCH " + str(self.current_epoch), "", sep='\n')
 
@@ -214,6 +225,8 @@ class RL_Scheduler:
                 process.reset()
 
             self._reset()
+
+        print("Total Global Time:", time.process_time() - self._start_global_time)
 
 
     def decide_action(self, machine_classification_available, task_classification_available):
