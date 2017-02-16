@@ -66,9 +66,6 @@ def get_letter(letter_number):
 
     return letters
 
-
-
-
 def handle_task_input(gflops=None):
 
     input = open("info/input/input.txt", "r")

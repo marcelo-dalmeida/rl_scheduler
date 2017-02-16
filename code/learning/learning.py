@@ -244,7 +244,7 @@ class Q_Learning:
                 self._cost_rewards_detailed_info_log[3].append(cost_goal_reward)
 
             else:
-                cost_goal_reward = 1
+                cost_goal_reward = 0
 
             if self._adaptive_time is not None:
 
@@ -288,7 +288,7 @@ class Q_Learning:
                 self._time_rewards_detailed_info_log[3].append(time_goal_reward)
 
             else:
-                time_goal_reward = 1
+                time_goal_reward = 0
 
             # Review
             reward = cost_goal_reward + time_goal_reward

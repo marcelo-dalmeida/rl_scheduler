@@ -21,15 +21,15 @@ sys.stdout = Logger()
 
 processes = handle_task_input(gflops=20)
 
-machine1 = Machine("1", "Machine 1", thread_quantity=1, power=10, cost=0.226, delay=1)
-machine2 = Machine("2", "Machine 2", thread_quantity=1, power=10, cost=0.226, delay=1)
-machine3 = Machine("3", "Machine 3", thread_quantity=1, power=10, cost=0.226, delay=1)
-machine4 = Machine("4", "Machine 4", thread_quantity=1, power=20, cost=0.532, delay=1)
-machine5 = Machine("5", "Machine 5", thread_quantity=1, power=20, cost=0.532, delay=1)
-machine6 = Machine("6", "Machine 6", thread_quantity=1, power=20, cost=0.532, delay=1)
-machine7 = Machine("7", "Machine 7", thread_quantity=1, power=30, cost=0.913, delay=1)
-machine8 = Machine("8", "Machine 8", thread_quantity=1, power=30, cost=0.913, delay=1)
-machine9 = Machine("9", "Machine 9", thread_quantity=1, power=30, cost=0.913, delay=1)
+machine1 = Machine("1", "Machine 1", thread_quantity=1, power=10, cost=0.226 / 360, delay=1)
+machine2 = Machine("2", "Machine 2", thread_quantity=1, power=10, cost=0.226 / 360, delay=1)
+machine3 = Machine("3", "Machine 3", thread_quantity=1, power=10, cost=0.226 / 360, delay=1)
+machine4 = Machine("4", "Machine 4", thread_quantity=1, power=20, cost=0.532 / 360, delay=1)
+machine5 = Machine("5", "Machine 5", thread_quantity=1, power=20, cost=0.532 / 360, delay=1)
+machine6 = Machine("6", "Machine 6", thread_quantity=1, power=20, cost=0.532 / 360, delay=1)
+machine7 = Machine("7", "Machine 7", thread_quantity=1, power=40, cost=0.913 / 360, delay=1)
+machine8 = Machine("8", "Machine 8", thread_quantity=1, power=40, cost=0.913 / 360, delay=1)
+machine9 = Machine("9", "Machine 9", thread_quantity=1, power=40, cost=0.913 / 360, delay=1)
 
 
 process_a_task_package = [(Task("a1", 40), []),
@@ -65,8 +65,11 @@ machines = [machine1, machine2, machine3, machine4, machine5, machine6, machine7
 #processes = [process_a, process_b, process_c, process_d]
 
 print(processes)
+import pdb
 
-scheduler = RL_Scheduler(machines, processes, epochs=100)
+#pdb.set_trace()
+
+scheduler = RL_Scheduler(machines, processes, epochs=1)
 scheduler.schedule()
 
 #scheduler = Scheduler(machines, processes)
